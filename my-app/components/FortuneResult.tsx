@@ -1,5 +1,6 @@
 import { View, Text, StyleSheet, TouchableOpacity, Share } from 'react-native';
 import React from 'react';
+import { Colors } from '@/constants/colors';
 
 type FortuneResultProps = {
     fortune: string;
@@ -32,38 +33,47 @@ export function FortuneResult({ fortune }: FortuneResultProps) {
 const styles = StyleSheet.create({
     container: {
         alignItems: 'center',
+        width: '90%',
     },
     resultContainer: {
-        padding: 20,
-        backgroundColor: '#F8F9FA',
-        borderRadius: 15,
-        elevation: 3,
-        shadowColor: '#000',
+        width: '100%',
+        padding: 24,
+        backgroundColor: Colors.card,
+        borderRadius: 20,
+        elevation: 2,
+        shadowColor: Colors.text,
         shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        marginBottom: 16,
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        marginBottom: 20,
     },
     fortuneText: {
         fontSize: 20,
         textAlign: 'center',
-        lineHeight: 28,
-    },
-    shareButton: {
-        backgroundColor: '#4A90E2',
-        paddingVertical: 8,
-        paddingHorizontal: 16,
-        borderRadius: 20,
-        marginBottom: 12,
-    },
-    shareButtonText: {
-        color: 'white',
-        fontSize: 14,
+        lineHeight: 30,
+        color: Colors.text,
         fontWeight: '500',
     },
+    shareButton: {
+        backgroundColor: Colors.primary,
+        paddingVertical: 12,
+        paddingHorizontal: 24,
+        borderRadius: 25,
+        marginBottom: 16,
+        elevation: 2,
+        shadowColor: Colors.primary,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+    },
+    shareButtonText: {
+        color: Colors.card,
+        fontSize: 16,
+        fontWeight: '600',
+    },
     resetInfo: {
-        fontSize: 12,
-        color: '#666',
+        fontSize: 13,
+        color: Colors.subText,
         textAlign: 'center',
     },
 });

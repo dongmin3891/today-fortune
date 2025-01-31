@@ -2,10 +2,10 @@ import { View, StyleSheet, Animated, Easing } from 'react-native';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { WORK_FORTUNES } from '../../../constants/fortunes';
-import { FortuneAnimation } from '../../../components/FortuneAnimation';
-import { FortuneResult } from '../../../components/FortuneResult';
-import { getNextAvailableTime } from '../../../utils/fortune';
+import { WORK_FORTUNES } from '@/constants/fortunes';
+import { FortuneAnimation } from '@/components/FortuneAnimation';
+import { FortuneResult } from '@/components/FortuneResult';
+import { getNextAvailableTime, getKSTDate, isFortuneAvailable } from '@/utils/fortune';
 
 const FORTUNE_STORAGE_KEY = '@fortune_state';
 
@@ -23,12 +23,16 @@ export default function FortuneScreen() {
         try {
             const fortuneState = await AsyncStorage.getItem(FORTUNE_STORAGE_KEY);
             if (fortuneState) {
-                const state = JSON.parse(fortuneState);
-                setFortune(state.fortune);
-                setShowResult(true);
-            } else {
-                startFortuneAnimation();
+                const { lastCheckedAt, fortune } = JSON.parse(fortuneState);
+                if (!isFortuneAvailable(lastCheckedAt)) {
+                    // 아직 다음 운세를 볼 수 없는 경우, 저장된 운세 표시
+                    setFortune(fortune);
+                    setShowResult(true);
+                    return;
+                }
             }
+            // 새로운 운세를 볼 수 있는 경우
+            startFortuneAnimation();
         } catch (error) {
             console.error('Error checking stored fortune:', error);
             startFortuneAnimation();
@@ -51,10 +55,13 @@ export default function FortuneScreen() {
 
     const saveFortune = async (fortuneText: string) => {
         try {
+            const nowKST = new Date(new Date().getTime() + 9 * 60 * 60 * 1000); // KST로 변환
+            const nextAvailableKST = getNextAvailableTime();
+
             const fortuneState = {
-                lastCheckedAt: new Date().toISOString(),
+                lastCheckedAt: nowKST.toISOString(),
                 fortune: fortuneText,
-                nextAvailableAt: getNextAvailableTime().toISOString(),
+                nextAvailableAt: nextAvailableKST.toISOString(),
             };
             await AsyncStorage.setItem(FORTUNE_STORAGE_KEY, JSON.stringify(fortuneState));
         } catch (error) {
