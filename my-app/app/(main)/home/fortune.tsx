@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { WORK_FORTUNES } from '@/constants/fortunes';
 import { FortuneAnimation } from '@/components/FortuneAnimation';
 import { FortuneResult } from '@/components/FortuneResult';
-import { getNextAvailableTime, getKSTDate, isFortuneAvailable } from '@/utils/fortune';
+import { getNextAvailableTime, getKSTDate, isFortuneAvailable, saveFortuneHistory } from '@/utils/fortune';
 
 const FORTUNE_STORAGE_KEY = '@fortune_state';
 
@@ -55,7 +55,7 @@ export default function FortuneScreen() {
 
     const saveFortune = async (fortuneText: string) => {
         try {
-            const nowKST = new Date(new Date().getTime() + 9 * 60 * 60 * 1000); // KST로 변환
+            const nowKST = new Date(new Date().getTime() + 9 * 60 * 60 * 1000);
             const nextAvailableKST = getNextAvailableTime();
 
             const fortuneState = {
@@ -64,6 +64,7 @@ export default function FortuneScreen() {
                 nextAvailableAt: nextAvailableKST.toISOString(),
             };
             await AsyncStorage.setItem(FORTUNE_STORAGE_KEY, JSON.stringify(fortuneState));
+            await saveFortuneHistory(fortuneText);
         } catch (error) {
             console.error('Error saving fortune:', error);
         }
@@ -84,8 +85,6 @@ export default function FortuneScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
         backgroundColor: '#fff',
     },
 });

@@ -1,43 +1,73 @@
-import { View, Text, StyleSheet, TouchableOpacity, Share } from 'react-native';
-import React from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Share, Platform } from 'react-native';
+import { useRouter } from 'expo-router';
+import React, { useRef } from 'react';
 import { Colors } from '@/constants/colors';
+import ViewShot from 'react-native-view-shot';
 
 type FortuneResultProps = {
     fortune: string;
 };
 
 export function FortuneResult({ fortune }: FortuneResultProps) {
+    const router = useRouter();
+    const viewShotRef = useRef<ViewShot>(null);
     const today = new Date();
     const formattedDate = `${today.getFullYear()}년 ${today.getMonth() + 1}월 ${today.getDate()}일`;
 
     const handleShare = async () => {
         try {
+            if (viewShotRef.current) {
+                const uri = await viewShotRef.current.capture();
+
+                if (Platform.OS === 'ios') {
+                    await Share.share({
+                        url: uri,
+                        message: `[오늘의 직장 운세]\n\n${fortune}\n\n#직장운세 #오늘의운세`,
+                    });
+                } else {
+                    await Share.share({
+                        title: '오늘의 직장 운세',
+                        message: `[오늘의 직장 운세]\n\n${fortune}\n\n#직장운세 #오늘의운세`,
+                        url: `file://${uri}`,
+                    });
+                }
+            }
+        } catch (error) {
+            console.error('Error sharing fortune:', error);
             await Share.share({
                 message: `[오늘의 직장 운세]\n\n${fortune}\n\n#직장운세 #오늘의운세`,
             });
-        } catch (error) {
-            console.error('Error sharing fortune:', error);
         }
     };
 
     return (
         <View style={styles.container}>
-            <View style={styles.header}>
-                <Text style={styles.date}>{formattedDate}</Text>
-                <Text style={styles.title}>오늘의 운세</Text>
-            </View>
+            <ViewShot
+                ref={viewShotRef}
+                options={{
+                    format: 'jpg',
+                    quality: 0.9,
+                }}
+                style={styles.shotContainer}
+            >
+                <View style={styles.cardContainer}>
+                    <View style={styles.header}>
+                        <Text style={styles.date}>{formattedDate}</Text>
+                        <Text style={styles.title}>오늘의 운세</Text>
+                    </View>
 
-            <View style={styles.content}>
-                {/* <View style={styles.decorationLeft} />
-                <View style={styles.decorationRight} /> */}
-                {/* <Text style={[styles.quoteMark, styles.quoteMarkLeft]}>"</Text> */}
-                <Text style={styles.fortuneText}>{fortune}</Text>
-                {/* <Text style={[styles.quoteMark, styles.quoteMarkRight]}>"</Text> */}
-            </View>
+                    <View style={styles.content}>
+                        <Text style={styles.fortuneText}>{fortune}</Text>
+                    </View>
+                </View>
+            </ViewShot>
 
             <View style={styles.footer}>
                 <TouchableOpacity style={styles.shareButton} onPress={handleShare}>
                     <Text style={styles.shareButtonText}>공유하기</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.historyButton} onPress={() => router.push('/home/history')}>
+                    <Text style={styles.historyButtonText}>지난 운세 보기</Text>
                 </TouchableOpacity>
                 <Text style={styles.updateInfo}>매일 아침 6시에 업데이트 됩니다</Text>
             </View>
@@ -153,5 +183,29 @@ const styles = StyleSheet.create({
         color: Colors.subText,
         textAlign: 'center',
         letterSpacing: -0.2,
+    },
+    historyButton: {
+        backgroundColor: Colors.background,
+        paddingVertical: 16,
+        borderRadius: 14,
+        marginBottom: 12,
+        borderWidth: 1,
+        borderColor: Colors.primary,
+    },
+    historyButtonText: {
+        color: Colors.primary,
+        fontSize: 17,
+        fontWeight: '600',
+        textAlign: 'center',
+        letterSpacing: -0.3,
+    },
+    shotContainer: {
+        flex: 1,
+        backgroundColor: Colors.background,
+        paddingTop: 20,
+    },
+    cardContainer: {
+        flex: 1,
+        marginHorizontal: 20,
     },
 });
