@@ -24,9 +24,15 @@ export default function MainLayout() {
                 contentStyle: {
                     backgroundColor: Colors.background,
                 },
-                headerRight: ({ tintColor }) => (
-                    <TouchableOpacity style={{ padding: 8, marginRight: 8 }} onPress={() => router.push('/settings')}>
-                        <Ionicons name="settings-outline" size={24} color={tintColor} />
+                headerRight: () => (
+                    <TouchableOpacity
+                        style={{ padding: 8, marginRight: 8 }}
+                        onPressOut={() => {
+                            router.push('/settings');
+                        }}
+                        activeOpacity={0.7}
+                    >
+                        <Ionicons name="settings-outline" size={24} color={Colors.text} />
                     </TouchableOpacity>
                 ),
             }}
