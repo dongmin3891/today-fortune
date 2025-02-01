@@ -8,11 +8,9 @@ import { FORTUNE_MESSAGES } from '@/constants/fortunes';
 
 type FortuneResultProps = {
     fortune: string;
-    isBookmarked: boolean;
-    handleBookmark: () => void;
 };
 
-export function FortuneResult({ fortune, isBookmarked, handleBookmark }: FortuneResultProps) {
+export function FortuneResult({ fortune }: FortuneResultProps) {
     const router = useRouter();
     const viewShotRef = useRef<ViewShot>(null);
     const today = new Date();
@@ -36,7 +34,7 @@ export function FortuneResult({ fortune, isBookmarked, handleBookmark }: Fortune
 
     const handleShare = async () => {
         try {
-            if (viewShotRef.current) {
+            if (viewShotRef.current?.capture) {
                 const uri = await viewShotRef.current.capture();
 
                 if (Platform.OS === 'ios') {
@@ -269,20 +267,5 @@ const styles = StyleSheet.create({
     cardContainer: {
         flex: 1,
         marginHorizontal: 20,
-    },
-    bookmarkButton: {
-        backgroundColor: Colors.background,
-        paddingVertical: 16,
-        borderRadius: 14,
-        marginBottom: 12,
-        borderWidth: 1,
-        borderColor: Colors.primary,
-    },
-    bookmarkButtonText: {
-        color: Colors.primary,
-        fontSize: 17,
-        fontWeight: '600',
-        textAlign: 'center',
-        letterSpacing: -0.3,
     },
 });
