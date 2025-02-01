@@ -1,18 +1,38 @@
-import { View, Text, StyleSheet, TouchableOpacity, Share, Platform } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Share, Platform, Animated, Pressable } from 'react-native';
 import { useRouter } from 'expo-router';
-import React, { useRef } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { Colors } from '@/constants/colors';
 import ViewShot from 'react-native-view-shot';
+import { Ionicons } from '@expo/vector-icons';
+import { FORTUNE_MESSAGES } from '@/constants/fortunes';
 
 type FortuneResultProps = {
     fortune: string;
+    isBookmarked: boolean;
+    handleBookmark: () => void;
 };
 
-export function FortuneResult({ fortune }: FortuneResultProps) {
+export function FortuneResult({ fortune, isBookmarked, handleBookmark }: FortuneResultProps) {
     const router = useRouter();
     const viewShotRef = useRef<ViewShot>(null);
     const today = new Date();
-    const formattedDate = `${today.getFullYear()}년 ${today.getMonth() + 1}월 ${today.getDate()}일`;
+    const formattedDate = today.toLocaleDateString('ko-KR', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        weekday: 'long',
+    });
+    const fadeAnim = useRef(new Animated.Value(0)).current;
+    const buttonScale = useRef(new Animated.Value(1)).current;
+    const [message] = useState(() => FORTUNE_MESSAGES[Math.floor(Math.random() * FORTUNE_MESSAGES.length)]);
+
+    useEffect(() => {
+        Animated.timing(fadeAnim, {
+            toValue: 1,
+            duration: 800,
+            useNativeDriver: true,
+        }).start();
+    }, []);
 
     const handleShare = async () => {
         try {
@@ -40,6 +60,20 @@ export function FortuneResult({ fortune }: FortuneResultProps) {
         }
     };
 
+    const handlePressIn = () => {
+        Animated.spring(buttonScale, {
+            toValue: 0.97,
+            useNativeDriver: true,
+        }).start();
+    };
+
+    const handlePressOut = () => {
+        Animated.spring(buttonScale, {
+            toValue: 1,
+            useNativeDriver: true,
+        }).start();
+    };
+
     return (
         <View style={styles.container}>
             <ViewShot
@@ -53,21 +87,32 @@ export function FortuneResult({ fortune }: FortuneResultProps) {
                 <View style={styles.cardContainer}>
                     <View style={styles.header}>
                         <Text style={styles.date}>{formattedDate}</Text>
-                        <Text style={styles.title}>오늘의 운세</Text>
+                        <View style={styles.titleContainer}>
+                            <Text style={styles.title}>오늘의 운세</Text>
+                            <Text style={styles.subtitle}>{message}</Text>
+                        </View>
                     </View>
 
-                    <View style={styles.content}>
+                    <Animated.View style={[styles.content, { opacity: fadeAnim }]}>
                         <Text style={styles.fortuneText}>{fortune}</Text>
-                    </View>
+                    </Animated.View>
                 </View>
             </ViewShot>
 
             <View style={styles.footer}>
-                <TouchableOpacity style={styles.shareButton} onPress={handleShare}>
-                    <Text style={styles.shareButtonText}>공유하기</Text>
-                </TouchableOpacity>
+                <Pressable onPressIn={handlePressIn} onPressOut={handlePressOut} onPress={handleShare}>
+                    <Animated.View style={[styles.shareButton, { transform: [{ scale: buttonScale }] }]}>
+                        <View style={styles.buttonContent}>
+                            <Ionicons name="share-outline" size={20} color={Colors.card} />
+                            <Text style={styles.shareButtonText}>공유하기</Text>
+                        </View>
+                    </Animated.View>
+                </Pressable>
                 <TouchableOpacity style={styles.historyButton} onPress={() => router.push('/home/history')}>
-                    <Text style={styles.historyButtonText}>지난 운세 보기</Text>
+                    <View style={styles.buttonContent}>
+                        <Ionicons name="time-outline" size={20} color={Colors.primary} />
+                        <Text style={styles.historyButtonText}>지난 운세 보기</Text>
+                    </View>
                 </TouchableOpacity>
                 <Text style={styles.updateInfo}>매일 아침 6시에 업데이트 됩니다</Text>
             </View>
@@ -83,23 +128,32 @@ const styles = StyleSheet.create({
     header: {
         paddingHorizontal: 20,
         paddingTop: 16,
-        paddingBottom: 24,
+        paddingBottom: 28,
     },
     date: {
-        fontSize: 14,
-        color: Colors.subText,
-        marginBottom: 4,
+        fontSize: 16,
+        color: Colors.primary,
+        marginBottom: 8,
+        fontWeight: '600',
+    },
+    titleContainer: {
+        gap: 6,
     },
     title: {
         fontSize: 24,
         fontWeight: '700',
         color: Colors.text,
     },
+    subtitle: {
+        fontSize: 15,
+        color: Colors.subText,
+        letterSpacing: -0.3,
+    },
     content: {
         flex: 1,
         backgroundColor: Colors.card,
-        paddingHorizontal: 32,
-        paddingVertical: 40,
+        paddingHorizontal: 40,
+        paddingVertical: 48,
         justifyContent: 'center',
         marginHorizontal: 20,
         borderRadius: 20,
@@ -110,12 +164,14 @@ const styles = StyleSheet.create({
         shadowRadius: 12,
     },
     fortuneText: {
-        fontSize: 24,
-        lineHeight: 36,
+        fontSize: 22,
+        lineHeight: 34,
         color: Colors.text,
         letterSpacing: -0.5,
         textAlign: 'center',
         fontWeight: '600',
+        flexWrap: 'wrap',
+        flexShrink: 1,
     },
     decorationLeft: {
         position: 'absolute',
@@ -171,6 +227,12 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.2,
         shadowRadius: 8,
     },
+    buttonContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 8,
+    },
     shareButtonText: {
         color: Colors.card,
         fontSize: 17,
@@ -207,5 +269,20 @@ const styles = StyleSheet.create({
     cardContainer: {
         flex: 1,
         marginHorizontal: 20,
+    },
+    bookmarkButton: {
+        backgroundColor: Colors.background,
+        paddingVertical: 16,
+        borderRadius: 14,
+        marginBottom: 12,
+        borderWidth: 1,
+        borderColor: Colors.primary,
+    },
+    bookmarkButtonText: {
+        color: Colors.primary,
+        fontSize: 17,
+        fontWeight: '600',
+        textAlign: 'center',
+        letterSpacing: -0.3,
     },
 });

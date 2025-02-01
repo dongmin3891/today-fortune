@@ -1,10 +1,21 @@
 import * as React from 'react';
 import Svg, { Path } from 'react-native-svg';
 
-export function FortuneBagIcon(props: any) {
+type Props = {
+    size?: number;
+    color?: string;
+};
+
+export function FortuneBagIcon({ size = 24, color = '#000' }: Props) {
     return (
-        <Svg width={120} height={120} viewBox="0 0 24 24" fill={props.color || '#7F5AF0'} {...props}>
-            <Path d="M12 2L4 8v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-8-6zm0 2.5L18 9H6l6-4.5zM6 20V11h12v9H6z" />
+        <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+            <Path
+                d="M12 2L3 7V17L12 22L21 17V7L12 2Z"
+                stroke={color}
+                strokeWidth={2}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+            />
         </Svg>
     );
 }
