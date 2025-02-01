@@ -4,7 +4,10 @@ import React, { useRef, useState, useEffect } from 'react';
 import { Colors } from '@/constants/colors';
 import { FortuneBagIcon } from '@/components/icons/FortuneBagIcon';
 import { Ionicons } from '@expo/vector-icons';
-import { getNextAvailableTime } from '@/utils/fortune';
+import { getNextAvailableTime, isFortuneAvailable } from '@/utils/fortune';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const FORTUNE_STORAGE_KEY = '@fortune_state';
 
 export default function HomeScreen() {
     const router = useRouter();
@@ -18,6 +21,8 @@ export default function HomeScreen() {
 
     const buttonScale = useRef(new Animated.Value(1)).current;
     const [timeUntilNext, setTimeUntilNext] = useState('');
+    const tooltipAnim = useRef(new Animated.Value(0)).current;
+    const [hasCheckedToday, setHasCheckedToday] = useState(false);
 
     useEffect(() => {
         const updateRemainingTime = () => {
@@ -46,6 +51,43 @@ export default function HomeScreen() {
         return () => clearInterval(timer);
     }, []);
 
+    useEffect(() => {
+        // 말풍선 애니메이션
+        Animated.loop(
+            Animated.sequence([
+                Animated.timing(tooltipAnim, {
+                    toValue: 1,
+                    duration: 1000,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(tooltipAnim, {
+                    toValue: 0,
+                    duration: 1000,
+                    useNativeDriver: true,
+                }),
+            ])
+        ).start();
+    }, []);
+
+    useEffect(() => {
+        checkTodayFortune();
+    }, []);
+
+    const checkTodayFortune = async () => {
+        try {
+            const fortuneState = await AsyncStorage.getItem(FORTUNE_STORAGE_KEY);
+            if (fortuneState) {
+                const { lastCheckedAt } = JSON.parse(fortuneState);
+                setHasCheckedToday(!isFortuneAvailable(lastCheckedAt));
+            } else {
+                setHasCheckedToday(false);
+            }
+        } catch (error) {
+            console.error('Error checking fortune:', error);
+            setHasCheckedToday(false);
+        }
+    };
+
     const handlePressIn = () => {
         Animated.spring(buttonScale, {
             toValue: 0.95,
@@ -69,10 +111,40 @@ export default function HomeScreen() {
                 <View style={styles.headerSection}>
                     <Text style={styles.title}>오늘의{'\n'}직장 운세</Text>
                     <Text style={styles.subtitle}>매일 아침 6시에 업데이트 됩니다</Text>
-                    <Text style={styles.nextUpdate}>다음 운세까지 {timeUntilNext} 남았어요</Text>
+                    {hasCheckedToday ? (
+                        <Text style={styles.nextUpdate}>다음 운세까지 {timeUntilNext} 남았어요</Text>
+                    ) : (
+                        <Text style={styles.encourageText}>아직 오늘의 운을 확인하지 않으셨네요! 🍀</Text>
+                    )}
                 </View>
 
                 <View style={styles.buttonSection}>
+                    {!hasCheckedToday && (
+                        <View style={styles.tooltipContainer}>
+                            <Animated.View
+                                style={[
+                                    styles.tooltip,
+                                    {
+                                        transform: [
+                                            {
+                                                translateY: tooltipAnim.interpolate({
+                                                    inputRange: [0, 1],
+                                                    outputRange: [0, -8],
+                                                }),
+                                            },
+                                        ],
+                                        opacity: tooltipAnim.interpolate({
+                                            inputRange: [0, 1],
+                                            outputRange: [0.7, 1],
+                                        }),
+                                    },
+                                ]}
+                            >
+                                <Text style={styles.tooltipText}>오늘은 어떤 행운이 기다리고 있을까요? ✨</Text>
+                                <View style={styles.tooltipArrow} />
+                            </Animated.View>
+                        </View>
+                    )}
                     <Pressable
                         onPressIn={handlePressIn}
                         onPressOut={handlePressOut}
@@ -85,7 +157,9 @@ export default function HomeScreen() {
                             </View>
                         </Animated.View>
                     </Pressable>
-                    <Text style={styles.description}>당신의 하루가 더 특별해지는 순간</Text>
+                    <Text style={styles.description}>
+                        {hasCheckedToday ? '당신의 하루가 더 특별해지는 순간' : '오늘의 운세로 시작하는 활기찬 하루'}
+                    </Text>
                 </View>
             </View>
         </View>
@@ -171,5 +245,45 @@ const styles = StyleSheet.create({
         color: Colors.subText,
         letterSpacing: -0.3,
         opacity: 0.8,
+    },
+    tooltipContainer: {
+        alignItems: 'center',
+        marginBottom: 12,
+    },
+    tooltip: {
+        backgroundColor: Colors.primary,
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        borderRadius: 20,
+        position: 'relative',
+    },
+    tooltipText: {
+        color: Colors.card,
+        fontSize: 15,
+        fontWeight: '600',
+        letterSpacing: -0.3,
+    },
+    tooltipArrow: {
+        position: 'absolute',
+        bottom: -8,
+        left: '50%',
+        marginLeft: -8,
+        width: 0,
+        height: 0,
+        borderLeftWidth: 8,
+        borderRightWidth: 8,
+        borderTopWidth: 8,
+        borderStyle: 'solid',
+        backgroundColor: 'transparent',
+        borderLeftColor: 'transparent',
+        borderRightColor: 'transparent',
+        borderTopColor: Colors.primary,
+    },
+    encourageText: {
+        fontSize: 14,
+        color: Colors.primary,
+        letterSpacing: -0.3,
+        opacity: 0.9,
+        fontWeight: '600',
     },
 });
