@@ -5,7 +5,7 @@ import { Colors } from '@/constants/colors';
 import ViewShot from 'react-native-view-shot';
 import { Ionicons } from '@expo/vector-icons';
 import { FORTUNE_MESSAGES } from '@/constants/fortunes';
-
+import * as Sharing from 'expo-sharing';
 type FortuneResultProps = {
     fortune: string;
 };
@@ -37,16 +37,14 @@ export function FortuneResult({ fortune }: FortuneResultProps) {
             if (viewShotRef.current?.capture) {
                 const uri = await viewShotRef.current.capture();
 
-                if (Platform.OS === 'ios') {
-                    await Share.share({
-                        url: uri,
-                        message: `[오늘의 직장 운세]\n\n${fortune}\n\n#직장운세 #오늘의운세`,
+                if (Platform.OS === 'ios' || Platform.OS === 'android') {
+                    await Sharing.shareAsync(uri, {
+                        dialogTitle: '오늘의 직장 운세',
+                        mimeType: 'image/png', // ✅ 확장자 지정
                     });
                 } else {
                     await Share.share({
-                        title: '오늘의 직장 운세',
                         message: `[오늘의 직장 운세]\n\n${fortune}\n\n#직장운세 #오늘의운세`,
-                        url: `file://${uri}`,
                     });
                 }
             }
