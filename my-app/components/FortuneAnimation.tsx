@@ -1,26 +1,40 @@
 import { View, StyleSheet, Animated, Text } from 'react-native';
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Colors } from '@/constants/colors';
+import { FortuneBagIcon } from './icons/FortuneBagIcon';
 
-type FortuneAnimationProps = {
+type Props = {
     spin: Animated.AnimatedInterpolation<string>;
 };
 
-export function FortuneAnimation({ spin }: FortuneAnimationProps) {
+export function FortuneAnimation({ spin }: Props) {
+    const fadeAnim = useRef(new Animated.Value(0)).current;
+
+    useEffect(() => {
+        Animated.timing(fadeAnim, {
+            toValue: 1,
+            duration: 600,
+            useNativeDriver: true,
+        }).start();
+    }, []);
+
     return (
         <View style={styles.container}>
             <View style={styles.content}>
                 <Animated.View
                     style={[
-                        styles.fortuneBag,
+                        styles.iconContainer,
                         {
+                            opacity: fadeAnim,
                             transform: [{ rotate: spin }],
                         },
                     ]}
                 >
-                    <Text style={styles.fortuneEmoji}>🎋</Text>
+                    <FortuneBagIcon size={80} color={Colors.primary} />
                 </Animated.View>
-                <Text style={styles.loadingText}>오늘의 운세를 확인하고 있어요</Text>
+                <Animated.Text style={[styles.loadingText, { opacity: fadeAnim }]}>
+                    오늘의 운세를 확인하고 있어요
+                </Animated.Text>
             </View>
         </View>
     );
@@ -30,25 +44,18 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: Colors.background,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     content: {
-        flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        paddingBottom: '20%', // 약간 위로 올림
     },
-    fortuneBag: {
-        width: 120,
-        height: 120,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginBottom: 40,
-    },
-    fortuneEmoji: {
-        fontSize: 80,
+    iconContainer: {
+        marginBottom: 24,
     },
     loadingText: {
-        fontSize: 16,
+        fontSize: 15,
         color: Colors.subText,
         letterSpacing: -0.3,
     },
