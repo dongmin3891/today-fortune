@@ -36,3 +36,54 @@
 -   react-native-viewshot (이미지 캡처/공유)
 
 ## 프로젝트 구조 📁
+
+my-app/
+├── app/
+│ ├── (main)/
+│ │ ├── home/
+│ │ │ ├── index.tsx # 홈 화면
+│ │ │ ├── fortune.tsx # 운세 확인 화면
+│ │ │ └── history.tsx # 히스토리 화면
+│ │ └── settings.tsx # 설정 화면
+│ └── layout.tsx # 루트 레이아웃
+├── components/
+│ ├── FortuneAnimation.tsx # 운세 애니메이션
+│ └── FortuneResult.tsx # 운세 결과 표시
+├── constants/
+│ ├── colors.ts # 색상 테마
+│ └── fortunes.ts # 운세 데이터
+└── utils/
+└── notification.ts # 알림 관련 유틸리티
+
+## 설치 및 실행 🚀
+
+bash
+프로젝트 클론
+git clone [repository-url]
+의존성 설치
+cd my-app
+npm install
+개발 서버 실행
+npm start
+iOS 시뮬레이터에서 실행
+npm run ios
+Android 에뮬레이터에서 실행
+npm run android
+
+## 환경 설정 ⚙️
+
+1. expo-notifications 설정
+2. 앱 아이콘 및 스플래시 스크린 설정
+3. eas.json 설정 (배포용)
+
+## 라이선스 📝
+
+MIT License
+
+## 기여 방법 🤝
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
