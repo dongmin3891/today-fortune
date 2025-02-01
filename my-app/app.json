@@ -1,56 +1,54 @@
 {
-  "expo": {
-    "enableDevTools": true,
-    "name": "오늘의 직장 운세",
-    "slug": "my-app",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/images/logo.png",
-    "scheme": "myapp",
-    "userInterfaceStyle": "light",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
-    },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
-    "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.yourcompany.workfortune"
-    },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      },
-      "package": "com.yourcompany.workfortune"
-    },
-    "plugins": [
-      "expo-router",
-      "expo-notifications",
-      [
-        "expo-splash-screen",
-        {
-          "image": "./assets/images/logo.png",
-          "imageWidth": 200,
-          "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
-        }
-      ]
-    ],
-    "experiments": {
-      "typedRoutes": true
-    },
-    "extra": {
-      "router": {
-        "origin": false
-      },
-      "eas": {
-        "projectId": "f52f0da8-c27f-40a3-944e-c73d914c1ba2"
-      }
-    },
-    "owner": "dongmin3891"
-  }
+    "expo": {
+        "enableDevTools": true,
+        "name": "오늘의 직장 운세",
+        "slug": "my-app",
+        "version": "1.0.0",
+        "orientation": "portrait",
+        "icon": "./assets/images/logo.png",
+        "scheme": "myapp",
+        "userInterfaceStyle": "light",
+        "splash": {
+            "image": "./assets/images/splash-icon.png",
+            "resizeMode": "contain",
+            "backgroundColor": "#ffffff"
+        },
+        "assetBundlePatterns": ["**/*"],
+        "ios": {
+            "supportsTablet": true,
+            "bundleIdentifier": "com.yourcompany.workfortune"
+        },
+        "android": {
+            "adaptiveIcon": {
+                "foregroundImage": "./assets/images/logo.png",
+                "backgroundColor": "#ffffff"
+            },
+            "package": "com.yourcompany.workfortune"
+        },
+        "plugins": [
+            "expo-router",
+            "expo-notifications",
+            [
+                "expo-splash-screen",
+                {
+                    "image": "./assets/images/logo.png",
+                    "imageWidth": 200,
+                    "resizeMode": "contain",
+                    "backgroundColor": "#ffffff"
+                }
+            ]
+        ],
+        "experiments": {
+            "typedRoutes": true
+        },
+        "extra": {
+            "router": {
+                "origin": false
+            },
+            "eas": {
+                "projectId": "f52f0da8-c27f-40a3-944e-c73d914c1ba2"
+            }
+        },
+        "owner": "dongmin3891"
+    }
 }
