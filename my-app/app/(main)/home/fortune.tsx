@@ -55,7 +55,7 @@ export default function FortuneScreen() {
 
     const saveFortune = async (fortuneText: string) => {
         try {
-            const nowKST = new Date(new Date().getTime() + 9 * 60 * 60 * 1000);
+            const nowKST = getKSTDate();
             const nextAvailableKST = getNextAvailableTime();
 
             const fortuneState = {

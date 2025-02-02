@@ -9,12 +9,13 @@ export function getKSTDate(date: Date = new Date()): Date {
 
 export function getNextAvailableTime(): Date {
     const now = new Date();
-    const nextAvailable = new Date(now);
-    nextAvailable.setUTCHours(21, 0, 0, 0); // UTC 21:00은 KST 06:00
 
-    // 현재 KST 시간이 06시 이후라면 다음날로 설정
-    const currentKSTHour = now.getUTCHours() + 9;
-    if (currentKSTHour >= 6) {
+    // 다음 운세 확인 가능 시간은 KST 06:00 (UTC 21:00)
+    const nextAvailable = new Date();
+    nextAvailable.setUTCHours(21, 0, 0, 0); // UTC 21:00
+
+    // 현재 시간이 KST 06:00(UTC 21:00) 이후라면 다음날로 설정
+    if (now.getUTCHours() >= 21) {
         nextAvailable.setUTCDate(nextAvailable.getUTCDate() + 1);
     }
 
@@ -24,10 +25,15 @@ export function getNextAvailableTime(): Date {
 export function isFortuneAvailable(lastCheckedAt: string | null): boolean {
     if (!lastCheckedAt) return true;
 
-    const now = new Date();
-    const nextAvailable = getNextAvailableTime();
+    const lastCheckedKST = getKSTDate(new Date(lastCheckedAt));
+    const nowKST = getKSTDate();
 
-    return now >= nextAvailable;
+    // 같은 날짜인지 확인
+    return (
+        lastCheckedKST.getFullYear() !== nowKST.getFullYear() ||
+        lastCheckedKST.getMonth() !== nowKST.getMonth() ||
+        lastCheckedKST.getDate() !== nowKST.getDate()
+    );
 }
 
 export const saveFortuneHistory = async (fortune: string) => {
