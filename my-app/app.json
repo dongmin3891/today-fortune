@@ -1,7 +1,7 @@
 {
     "expo": {
         "enableDevTools": true,
-        "name": "오늘의 직장 운세",
+        "name": "오늘직장운",
         "slug": "my-app",
         "version": "1.0.0",
         "orientation": "portrait",
