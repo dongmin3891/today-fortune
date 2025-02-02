@@ -1,6 +1,6 @@
 import { View, Text, TouchableOpacity, StyleSheet, Animated, Pressable } from 'react-native';
-import { useRouter } from 'expo-router';
-import React, { useRef, useState, useEffect } from 'react';
+import { useRouter, useFocusEffect } from 'expo-router';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { Colors } from '@/constants/colors';
 import { FortuneBagIcon } from '@/components/icons/FortuneBagIcon';
 import { Ionicons } from '@expo/vector-icons';
@@ -69,6 +69,14 @@ export default function HomeScreen() {
         ).start();
     }, []);
 
+    // 화면이 포커스될 때마다 운세 상태 체크
+    useFocusEffect(
+        useCallback(() => {
+            checkTodayFortune();
+        }, [])
+    );
+
+    // 기존의 useEffect는 유지 (초기 로딩용)
     useEffect(() => {
         checkTodayFortune();
     }, []);
