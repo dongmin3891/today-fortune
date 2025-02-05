@@ -11,7 +11,7 @@
         "test:watch": "jest --watch"
     },
     "dependencies": {
-        "@expo/webpack-config": "^18.0.1",
+        "@expo/webpack-config": "~0.17.2",
         "@react-native-async-storage/async-storage": "1.18.2",
         "expo": "~49.0.15",
         "expo-constants": "~14.4.2",
@@ -28,7 +28,7 @@
         "react-native-safe-area-context": "4.6.3",
         "react-native-screens": "~3.22.0",
         "react-native-svg": "13.9.0",
-        "react-native-web": "~0.19.6",
+        "react-native-web": "~0.18.10",
         "react-native-view-shot": "3.7.0",
         "expo-sharing": "~11.5.0"
     },
