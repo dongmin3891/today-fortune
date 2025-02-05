@@ -29,11 +29,16 @@ export function isFortuneAvailable(lastCheckedAt: string | null): boolean {
     const lastCheckedKST = getKSTDate(new Date(lastCheckedAt));
     const nowKST = getKSTDate();
 
-    // 오늘 날짜의 오전 6시를 기준으로 설정
+    // 오늘 오전 6시를 기준으로 설정
     const todayLimit = new Date(nowKST);
     todayLimit.setHours(6, 0, 0, 0);
 
-    // 마지막 체크 시간이 오늘 오전 6시 이전이면 운세 확인 가능
+    // 현재 시간이 오전 6시 이전이면 전날 오전 6시를 기준으로 설정
+    if (nowKST.getHours() < 6) {
+        todayLimit.setDate(todayLimit.getDate() - 1);
+    }
+
+    // 마지막 체크 시간이 오늘(또는 전날) 오전 6시 이전이면 운세 확인 가능
     return lastCheckedKST < todayLimit;
 }
 

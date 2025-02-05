@@ -49,6 +49,9 @@
                 "projectId": "f52f0da8-c27f-40a3-944e-c73d914c1ba2"
             }
         },
-        "owner": "dongmin3891"
+        "owner": "dongmin3891",
+        "web": {
+            "bundler": "metro"
+        }
     }
 }
