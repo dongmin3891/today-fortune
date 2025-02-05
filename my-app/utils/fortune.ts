@@ -3,8 +3,9 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // KST 시간을 얻는 유틸리티 함수
 export function getKSTDate(date: Date = new Date()): Date {
-    const kstDate = new Date(date.getTime() + 9 * 60 * 60 * 1000);
-    return kstDate;
+    // UTC+9 (한국 시간)로 변환
+    const utc = date.getTime() + date.getTimezoneOffset() * 60000;
+    return new Date(utc + 9 * 60 * 60 * 1000);
 }
 
 export function getNextAvailableTime(): Date {
@@ -28,12 +29,12 @@ export function isFortuneAvailable(lastCheckedAt: string | null): boolean {
     const lastCheckedKST = getKSTDate(new Date(lastCheckedAt));
     const nowKST = getKSTDate();
 
-    // 같은 날짜인지 확인
-    return (
-        lastCheckedKST.getFullYear() !== nowKST.getFullYear() ||
-        lastCheckedKST.getMonth() !== nowKST.getMonth() ||
-        lastCheckedKST.getDate() !== nowKST.getDate()
-    );
+    // 오늘 날짜의 오전 6시를 기준으로 설정
+    const todayLimit = new Date(nowKST);
+    todayLimit.setHours(6, 0, 0, 0);
+
+    // 마지막 체크 시간이 오늘 오전 6시 이전이면 운세 확인 가능
+    return lastCheckedKST < todayLimit;
 }
 
 export const saveFortuneHistory = async (fortune: string) => {
